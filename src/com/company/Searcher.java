@@ -36,12 +36,14 @@ public class Searcher extends Thread {
                 }
                 word = word.replaceAll("[^а-яА-Я]+", "");
 
-                if (Main.wordSetObject.flStop.get()) { return; }
-                if (!Main.wordSetObject.wordSet.add(word)) {
-                    System.out.println("word '"+word+"' repeated in file "+res);
-                    Main.wordSetObject.flStop.set(true);
-                    Main.finisher.finish(this.threadInd);
-                    return;
+                synchronized (Main.wordSetObject.wordSet) {
+                    if (Main.wordSetObject.flStop.get()) { return; }
+                    if (!Main.wordSetObject.wordSet.add(word)) {
+                        System.out.println("word '"+word+"' repeated in file "+res);
+                        Main.wordSetObject.flStop.set(true);
+                        Main.finisher.finish(this.threadInd);
+                        return;
+                    }
                 }
             }
 
