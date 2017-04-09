@@ -1,7 +1,5 @@
 package com.company;
 
-import javax.print.DocFlavor;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -14,8 +12,10 @@ import java.util.regex.Pattern;
  */
 public class Searcher extends Thread {
     String res;
+    Integer threadInd;
 
-    public Searcher(String res) {
+    public Searcher(String res, Integer threadInd) {
+        this.threadInd = threadInd;
         this.res = res;
         Thread t = new Thread(this);
         t.start();
@@ -36,13 +36,12 @@ public class Searcher extends Thread {
                 }
                 word = word.replaceAll("[^а-яА-Я]+", "");
 
-                synchronized (Main.wordSetObject.wordSet) {
-                    if (Main.wordSetObject.flStop.get()) { return; }
-                    if (!Main.wordSetObject.wordSet.add(word)) {
-                        System.out.println("word '"+word+"' repeated in file "+res);
-                        Main.wordSetObject.flStop.set(true);
-                        return;
-                    }
+                if (Main.wordSetObject.flStop.get()) { return; }
+                if (!Main.wordSetObject.wordSet.add(word)) {
+                    System.out.println("word '"+word+"' repeated in file "+res);
+                    Main.wordSetObject.flStop.set(true);
+                    Main.finisher.finish(this.threadInd);
+                    return;
                 }
             }
 
