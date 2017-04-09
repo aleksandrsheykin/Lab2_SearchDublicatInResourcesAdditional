@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by admin on 09.04.2017.
  */
 public class Finisher extends Thread  {
-    public AtomicBoolean[] threadsIsFinish;
-    public long startTime = System.nanoTime();
-    public long finishTime = 0;
+    private AtomicBoolean[] threadsIsFinish;
+    private long startTime = System.nanoTime();
+    private long finishTime = 0;
 
     public Finisher(Integer length) {
         this.threadsIsFinish = new AtomicBoolean[length];
@@ -35,9 +35,10 @@ public class Finisher extends Thread  {
         this.threadsIsFinish[threadInd].set(false);
     }
 
-    public void finish(Integer threadInd){
+    public synchronized void finish(Integer threadInd){
         threadsIsFinish[threadInd].set(true);
-        Thread.yield();
+        //Thread.yield();
+        //notify();
     }
 
 }
